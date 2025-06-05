@@ -1,5 +1,5 @@
 anthropic
-pdf2image
+pdf2image[poppler]
 Pillow
 PyPDF2
 python-dotenv
