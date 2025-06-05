@@ -1,4 +1,5 @@
 import os
+import streamlit as st
 from dotenv import load_dotenv
 from anthropic import Anthropic
 from utils.pdf_utils import pdf_to_images
@@ -6,7 +7,9 @@ from utils.xml_utils import read_xml_file
 
 
 load_dotenv()
-client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+# api_key = os.getenv("ANTHROPIC_API_KEY")
+api_key = st.secrets["API_KEY"]
+client = Anthropic(api_key=api_key)
 
 
 PROMPT = """
