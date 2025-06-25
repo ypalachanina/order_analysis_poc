@@ -13,7 +13,7 @@ This Proof of Concept was developed by Sigli. It is a Streamlit-based applicatio
 2. **Navigate to the App Directory**  
    Change your directory to the location of the app:
    ```bash
-   cd path/to/Copaco_PoC
+   cd path/to/order_analysis_poc
 
 3. **Run the App**  
    Execute the app with the following command:
