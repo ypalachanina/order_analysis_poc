@@ -1,8 +1,8 @@
-# Copaco_PoC
+# Order Analysis PoC
 
 ## Overview
 
-This Proof of Concept was developed for COPACO by Sigli. It is a Streamlit-based application designed to parse PDF invoices and orders, converting them into a standardized XML format. The application also offers the optional capability to merge data from secondary XML files.
+This Proof of Concept was developed by Sigli. It is a Streamlit-based application designed to parse PDF invoices and orders, converting them into a standardized XML format. The application also offers the optional capability to merge data from secondary XML files.
 ## How to Run the App
 
 1. **Install Requirements**  
