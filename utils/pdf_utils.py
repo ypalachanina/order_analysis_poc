@@ -36,6 +36,26 @@ def pdf_to_images(pdf_path):
     return encoded_images
 
 
+def pdf_to_text(pdf_path):
+    text_content = []
+
+    with open(pdf_path, 'rb') as file:
+        pdf_reader = PdfReader(file)
+        for page_num in range(len(pdf_reader.pages)):
+            page = pdf_reader.pages[page_num]
+            page_text = page.extract_text()
+            if page_text:
+                text_content.append(f"=== Page {page_num + 1} ===\n{page_text}")
+
+    return "\n\n".join(text_content)
+
+
+def pdf_to_images_and_text(pdf_path):
+    encoded_images = pdf_to_images(pdf_path)
+    text_content = pdf_to_text(pdf_path)
+    return encoded_images, text_content
+
+
 def encode_image(image_path: str) -> str:
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')

@@ -10,26 +10,21 @@ def run_app():
     # copaco_url = "https://media.licdn.com/dms/image/v2/C4E0BAQGGuwM2e3st9Q/company-logo_200_200/company-logo_200_200/0/1631348100751?e=2147483647&v=beta&t=s6bk_3ocd1ivBhtPJq71M2WqM7rdrFItEmb_-BkXlRs"
     copaco_path = "icons/copaco.jpg"
     st.set_page_config(page_title="COPACO PoC", page_icon=load_local_image(copaco_path))
-    st.title("📄 PDF & XML Processor")
-    st.markdown("Upload your PDF file and optionally an XML file to process them together.")
+    st.title("📄 PDF & Email Processor")
+    st.markdown("Upload your PDF file and optionally provide the email text to process them together.")
     with st.expander("ℹ️ How to use this app"):
         st.markdown("""
-        **Steps to process your files:**
+        **Steps to process your order:**
 
-        1. **Upload PDF File** (Required): Click on the PDF upload area and select your PDF file
-        2. **Upload XML File** (Optional): If you have an XML file to process alongside the PDF, upload it in the second area
-        3. **Process Files**: Click the "Process Files" button to start LLM processing
+        1. **Upload PDF File** (Required): Click on the PDF upload area and select your order PDF file
+        2. **Add Email Text** (Optional): Copy and paste the email text that accompanied the PDF order
+        3. **Process Order**: Click the "Process Order" button to start processing
         4. **View Results**: Once processing is complete, you can view the generated XML content
         5. **Download**: Use the download button to save the processed XML file to your computer
 
-        **Notes:**
-        - Only PDF files are accepted for the main upload
-        - XML files are optional and should be valid XML format
-        - Processing time may vary depending on file size and complexity
-        
-        **⚠️ The output is entirely based on the content of the files you upload.**
-        
-        The LLM will attempt to generate XML that matches the required format, but accurate results depend on the presence of relevant data in your PDF and (optional) XML files.
+        **⚠️ The output quality depends entirely on the content of your PDF and email text.**
+
+        The system will generate XML in the required format, but accurate results depend on the presence of relevant data in your PDF and e-mail text.
         """)
 
     st.markdown("""
@@ -67,56 +62,50 @@ def run_app():
     pdf_file = st.sidebar.file_uploader(
         "Choose a PDF file",
         type=['pdf'],
-        help="Upload the PDF file you want to process"
+        help="Upload the PDF order file you want to process"
     )
 
     if pdf_file is not None:
         st.session_state.pdf_filename = pdf_file.name.removesuffix(".pdf")
         st.sidebar.success(f"✅ PDF uploaded: {pdf_file.name}")
 
-    st.sidebar.subheader("📎 XML File (Optional)")
-    xml_file = st.sidebar.file_uploader(
-        "Choose an XML file",
-        type=['xml'],
-        help="Optionally upload an XML file to process alongside the PDF"
+    st.sidebar.subheader("📧 Email Text (Optional)")
+    email_text = st.sidebar.text_area(
+        "Paste email content here",
+        height=200,
+        placeholder="Example:\nFW: Inkooporder P0031006 / Own use //16971720\n\nBeste Copaco,\n\nHierbij onze order...\n\nKlantnummer: 111507\nReferentie: Own use",
+        help="Copy and paste the email text that accompanied this PDF order."
     )
 
-    if xml_file is not None:
-        st.sidebar.success(f"✅ XML uploaded: {xml_file.name}")
+    if email_text and email_text.strip():
+        st.sidebar.success(f"✅ Email text provided")
 
     process_disabled = pdf_file is None
 
     if st.button(
-            "🚀 Process Files",
+            "🚀 Process Order",
             disabled=process_disabled,
-            help="Process the uploaded PDF and XML files using LLM" if not process_disabled else "Upload a PDF file first"
+            help="Process the uploaded PDF and email text" if not process_disabled else "Upload a PDF file first"
     ):
         if pdf_file is not None:
-            with st.spinner("Processing files with LLM... This may take a moment."):
+            with st.spinner("Processing order... This may take a moment."):
                 try:
                     with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp_pdf:
                         tmp_pdf.write(pdf_file.getvalue())
                         pdf_path = tmp_pdf.name
 
-                    xml_path = None
-                    if xml_file is not None:
-                        with tempfile.NamedTemporaryFile(delete=False, suffix='.xml') as tmp_xml:
-                            tmp_xml.write(xml_file.getvalue())
-                            xml_path = tmp_xml.name
-
-                    final_xml = process(pdf_path, xml_path)
+                    email_content = email_text.strip() if email_text else None
+                    final_xml = process(pdf_path, email_content)
 
                     st.session_state.processed_xml = final_xml
                     st.session_state.processing_complete = True
 
                     os.unlink(pdf_path)
-                    if xml_path:
-                        os.unlink(xml_path)
 
-                    st.success("✅ LLM processing completed successfully!")
+                    st.success("✅ Order processing completed successfully!")
 
                 except Exception as e:
-                    st.error(f"❌ Error during LLM processing: {str(e)}")
+                    st.error(f"❌ Error during order processing: {str(e)}")
                     st.session_state.processing_complete = False
 
     if st.session_state.processing_complete:
